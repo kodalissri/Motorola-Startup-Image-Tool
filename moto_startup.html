@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOTOTRBO Startup Image Converter</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --navy: #0f0a3c;
+    --navy-light: #1a1450;
+    --navy-mid: #2d2568;
+    --coral: #ff4f5e;
+    --coral-hover: #ff3344;
+    --white: #ffffff;
+    --gray-50: #f8f9fc;
+    --gray-100: #f0f1f6;
+    --gray-200: #e2e4ed;
+    --gray-400: #9498b0;
+    --gray-600: #5c5f7a;
+    --blue-accent: #6c63ff;
+    --green: #22c55e;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 50px;
+    --shadow-sm: 0 2px 8px rgba(15,10,60,0.06);
+    --shadow-md: 0 8px 30px rgba(15,10,60,0.1);
+    --shadow-lg: 0 16px 50px rgba(15,10,60,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--gray-50);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── Header ──────────────────────────────────────────────── */
+  .header {
+    background: var(--navy);
+    padding: 0 40px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--white);
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+  .logo svg { width: 28px; height: 28px; }
+  .header-links { display: flex; align-items: center; gap: 8px; }
+  .header-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    transition: all 0.2s;
+  }
+  .header-links a:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+  .btn-header {
+    background: var(--coral) !important;
+    color: var(--white) !important;
+    font-weight: 600 !important;
+  }
+  .btn-header:hover { background: var(--coral-hover) !important; }
+
+  /* ── Hero ─────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(170deg, var(--navy) 0%, var(--navy-light) 40%, var(--navy-mid) 100%);
+    padding: 60px 40px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 140%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(108,99,255,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(255,79,94,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    color: var(--white);
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--coral), #ff8a5c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ── Main Content ────────────────────────────────────────── */
+  .main {
+    max-width: 1100px;
+    margin: -40px auto 60px;
+    padding: 0 24px;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ── Card ─────────────────────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .step {
+    background: var(--navy);
+    color: var(--white);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .card-subtitle {
+    color: var(--gray-600);
+    font-size: 14px;
+    margin-bottom: 24px;
+    padding-left: 40px;
+  }
+
+  /* ── Drop Zone ───────────────────────────────────────────── */
+  .dropzone {
+    border: 2px dashed var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 50px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--gray-50);
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--blue-accent);
+    background: rgba(108,99,255,0.04);
+  }
+  .dropzone.has-image {
+    border-color: var(--green);
+    background: rgba(34,197,94,0.04);
+    padding: 24px;
+  }
+  .dropzone-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--gray-100);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .dropzone-icon svg { width: 24px; height: 24px; color: var(--gray-400); }
+  .dropzone h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .dropzone p { font-size: 13px; color: var(--gray-400); }
+  .dropzone .browse-link { color: var(--blue-accent); font-weight: 600; }
+
+  .preview-container {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .preview-img {
+    max-width: 200px;
+    max-height: 120px;
+    border-radius: var(--radius-sm);
+    object-fit: contain;
+    background: var(--gray-100);
+  }
+  .preview-info { flex: 1; }
+  .preview-info .filename { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .preview-info .filedetails { font-size: 13px; color: var(--gray-600); }
+  .btn-change {
+    background: var(--gray-100);
+    border: none;
+    padding: 8px 20px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-change:hover { background: var(--gray-200); }
+
+  /* ── Model Selection ─────────────────────────────────────── */
+  .models-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .model-card {
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    user-select: none;
+  }
+  .model-card:hover { border-color: var(--blue-accent); background: rgba(108,99,255,0.02); }
+  .model-card.selected { border-color: var(--blue-accent); background: rgba(108,99,255,0.06); }
+  .model-card input { display: none; }
+  .model-check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--gray-200);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .model-card.selected .model-check {
+    background: var(--blue-accent);
+    border-color: var(--blue-accent);
+  }
+  .model-check svg { width: 14px; height: 14px; color: white; opacity: 0; transition: opacity 0.2s; }
+  .model-card.selected .model-check svg { opacity: 1; }
+  .model-info { flex: 1; }
+  .model-name { font-weight: 600; font-size: 14px; }
+  .model-specs {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-top: 2px;
+  }
+  .model-specs span {
+    background: var(--gray-100);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-right: 6px;
+    font-weight: 500;
+  }
+  .select-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-left: 40px;
+  }
+  .btn-select-action {
+    background: none;
+    border: 1px solid var(--gray-200);
+    padding: 6px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-select-action:hover { border-color: var(--navy); color: var(--navy); }
+
+  /* ── Convert Button ──────────────────────────────────────── */
+  .convert-section { text-align: center; padding: 10px 0; }
+  .btn-convert {
+    background: var(--coral);
+    color: var(--white);
+    border: none;
+    padding: 16px 48px;
+    border-radius: var(--radius-pill);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(255,79,94,0.3);
+    letter-spacing: -0.3px;
+  }
+  .btn-convert:hover { background: var(--coral-hover); transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,79,94,0.4); }
+  .btn-convert:active { transform: translateY(0); }
+  .btn-convert:disabled {
+    background: var(--gray-200);
+    color: var(--gray-400);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Results ─────────────────────────────────────────────── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .result-card {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .result-card:hover { box-shadow: var(--shadow-sm); }
+  .result-preview {
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+  }
+  .result-preview canvas {
+    max-width: 100%;
+    image-rendering: pixelated;
+    border-radius: 4px;
+  }
+  .result-model { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+  .result-specs { font-size: 12px; color: var(--gray-600); margin-bottom: 12px; }
+  .btn-download {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-download:hover { background: var(--navy-light); transform: translateY(-1px); }
+
+  .btn-download-all {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 14px 36px;
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-top: 20px;
+  }
+  .btn-download-all:hover { background: var(--navy-light); transform: translateY(-1px); }
+
+  /* ── Hidden ──────────────────────────────────────────────── */
+  .hidden { display: none !important; }
+
+  /* ── Footer ──────────────────────────────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--gray-400);
+    font-size: 13px;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .header { padding: 0 20px; }
+    .hero { padding: 40px 20px 60px; }
+    .hero h1 { font-size: 28px; }
+    .main { padding: 0 16px; }
+    .card { padding: 24px; }
+    .models-grid { grid-template-columns: 1fr; }
+    .results-grid { grid-template-columns: 1fr; }
+    .preview-container { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+    </svg>
+    MOTOTRBO Image Tool
+  </div>
+  <div class="header-links">
+    <a href="#" onclick="document.getElementById('step1').scrollIntoView({behavior:'smooth'});return false;">Upload</a>
+    <a href="#" onclick="document.getElementById('step2').scrollIntoView({behavior:'smooth'});return false;">Models</a>
+    <a href="#" class="btn-header" onclick="handleConvert();return false;">Convert</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Convert images for <span>MOTOTRBO</span> radios</h1>
+  <p>Upload any image and instantly convert it to the correct BMP format for your Motorola radio's startup screen.</p>
+</section>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Step 1: Upload -->
+  <div class="card" id="step1">
+    <div class="card-title"><span class="step">1</span> Upload Image</div>
+    <div class="card-subtitle">Drag and drop or browse for your logo or image. Supports PNG, JPG, BMP, SVG, WebP.</div>
+
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+      <div id="dropzoneEmpty">
+        <div class="dropzone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <h3>Drop your image here or <span class="browse-link">browse</span></h3>
+        <p>PNG, JPG, BMP, WebP up to 20MB</p>
+      </div>
+      <div id="dropzonePreview" class="hidden">
+        <div class="preview-container">
+          <img id="previewImg" class="preview-img" alt="Preview">
+          <div class="preview-info">
+            <div class="filename" id="fileName"></div>
+            <div class="filedetails" id="fileDetails"></div>
+          </div>
+          <button class="btn-change" onclick="event.stopPropagation();resetUpload()">Change</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+  </div>
+
+  <!-- Step 2: Select Models -->
+  <div class="card" id="step2">
+    <div class="card-title"><span class="step">2</span> Select Radio Models</div>
+    <div class="card-subtitle">Choose which radio models you need startup images for.</div>
+    <div class="select-actions">
+      <button class="btn-select-action" onclick="selectAll()">Select All</button>
+      <button class="btn-select-action" onclick="selectNone()">Deselect All</button>
+    </div>
+    <div class="models-grid" id="modelsGrid"></div>
+  </div>
+
+  <!-- Convert Button -->
+  <div class="card convert-section">
+    <button class="btn-convert" id="btnConvert" disabled onclick="handleConvert()">Convert & Download</button>
+    <p style="margin-top:12px;font-size:13px;color:var(--gray-400);" id="convertStatus"></p>
+  </div>
+
+  <!-- Step 3: Results -->
+  <div class="card hidden" id="resultsCard">
+    <div class="card-title"><span class="step">3</span> Results</div>
+    <div class="card-subtitle">Preview and download your converted startup images.</div>
+    <div class="results-grid" id="resultsGrid"></div>
+    <div style="text-align:center">
+      <button class="btn-download-all" id="btnDownloadAll" onclick="downloadAll()">Download All</button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">Built by <strong>Shri Kodali</strong> &nbsp;&middot;&nbsp; All processing happens locally in your browser.</footer>
+
+<script>
+// ── Model Definitions ─────────────────────────────────────────────────────────
+const MODELS = [
+  { key: 'xpr5550', name: 'XPR 5550 / 5550e', category: 'Mobile', width: 160, height: 72, depth: 8 },
+  { key: 'xpr7550', name: 'XPR 7550 / 7550e', category: 'Portable', width: 132, height: 90, depth: 8 },
+  { key: 'xpr7350', name: 'XPR 7350e', category: 'Portable Mono', width: 132, height: 72, depth: 1 },
+  { key: 'hch',     name: 'Handheld Control Head', category: 'HCH Mode', width: 132, height: 90, depth: 8 },
+  { key: 'sl7550',  name: 'SL7550 / SL300', category: 'SL Series', width: 320, height: 240, depth: 16 },
+  { key: 'r7',      name: 'MOTOTRBO R7', category: 'R7', width: 240, height: 320, depth: 16 },
+];
+
+let uploadedImage = null;
+let selectedModels = new Set();
+let generatedFiles = [];
+
+// ── Build Model Cards ─────────────────────────────────────────────────────────
+function buildModelCards() {
+  const grid = document.getElementById('modelsGrid');
+  MODELS.forEach(m => {
+    const depthLabel = m.depth === 16 ? '16-bit RGB565' : m.depth === 1 ? '1-bit Mono' : '8-bit 256 Color';
+    const card = document.createElement('div');
+    card.className = 'model-card';
+    card.dataset.key = m.key;
+    card.innerHTML = `
+      <div class="model-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="model-info">
+        <div class="model-name">${m.name}</div>
+        <div class="model-specs"><span>${m.width}x${m.height}</span><span>${depthLabel}</span><span>${m.category}</span></div>
+      </div>`;
+    card.onclick = () => toggleModel(m.key, card);
+    grid.appendChild(card);
+  });
+}
+
+function toggleModel(key, card) {
+  if (selectedModels.has(key)) {
+    selectedModels.delete(key);
+    card.classList.remove('selected');
+  } else {
+    selectedModels.add(key);
+    card.classList.add('selected');
+  }
+  updateConvertButton();
+}
+
+function selectAll() {
+  document.querySelectorAll('.model-card').forEach(c => {
+    c.classList.add('selected');
+    selectedModels.add(c.dataset.key);
+  });
+  updateConvertButton();
+}
+
+function selectNone() {
+  document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+  selectedModels.clear();
+  updateConvertButton();
+}
+
+function updateConvertButton() {
+  const btn = document.getElementById('btnConvert');
+  btn.disabled = !uploadedImage || selectedModels.size === 0;
+}
+
+// ── File Handling ─────────────────────────────────────────────────────────────
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+
+function handleFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      uploadedImage = img;
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileDetails').textContent = `${img.width} x ${img.height} px  |  ${(file.size/1024).toFixed(1)} KB`;
+      document.getElementById('dropzoneEmpty').classList.add('hidden');
+      document.getElementById('dropzonePreview').classList.remove('hidden');
+      dz.classList.add('has-image');
+      updateConvertButton();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetUpload() {
+  uploadedImage = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('dropzoneEmpty').classList.remove('hidden');
+  document.getElementById('dropzonePreview').classList.add('hidden');
+  dz.classList.remove('has-image');
+  updateConvertButton();
+}
+
+// ── Image Processing ──────────────────────────────────────────────────────────
+function resizeToFit(srcImg, w, h) {
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+
+  // White background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, w, h);
+
+  // Scale to fit, center
+  const scale = Math.min(w / srcImg.width, h / srcImg.height);
+  const nw = Math.round(srcImg.width * scale);
+  const nh = Math.round(srcImg.height * scale);
+  const ox = Math.round((w - nw) / 2);
+  const oy = Math.round((h - nh) / 2);
+  ctx.drawImage(srcImg, ox, oy, nw, nh);
+
+  return { canvas, ctx, imageData: ctx.getImageData(0, 0, w, h) };
+}
+
+// ── BMP Helper: write little-endian values to Uint8Array ─────────────────────
+function writeU16(arr, pos, val) {
+  arr[pos]     = val & 0xFF;
+  arr[pos + 1] = (val >> 8) & 0xFF;
+}
+function writeU32(arr, pos, val) {
+  arr[pos]     = val & 0xFF;
+  arr[pos + 1] = (val >> 8) & 0xFF;
+  arr[pos + 2] = (val >> 16) & 0xFF;
+  arr[pos + 3] = (val >> 24) & 0xFF;
+}
+function writeS32(arr, pos, val) {
+  writeU32(arr, pos, val < 0 ? val + 0x100000000 : val);
+}
+
+// ── Write BMP file header + BITMAPINFOHEADER ─────────────────────────────────
+function writeBMPHeaders(arr, fileSize, dataOffset, w, h, bpp, compression, imageSize, colorsUsed) {
+  // BMP file header (14 bytes)
+  arr[0] = 0x42; arr[1] = 0x4D;           // 'BM'
+  writeU32(arr, 2, fileSize);
+  writeU16(arr, 6, 0);                     // reserved1
+  writeU16(arr, 8, 0);                     // reserved2
+  writeU32(arr, 10, dataOffset);
+
+  // BITMAPINFOHEADER (40 bytes)
+  writeU32(arr, 14, 40);                   // header size
+  writeS32(arr, 18, w);                    // width
+  writeS32(arr, 22, h);                    // height (positive = bottom-up)
+  writeU16(arr, 26, 1);                    // color planes
+  writeU16(arr, 28, bpp);                  // bits per pixel
+  writeU32(arr, 30, compression);          // compression
+  writeU32(arr, 34, imageSize);            // raw image data size
+  writeS32(arr, 38, 2835);                // x pixels/meter (~72 DPI)
+  writeS32(arr, 42, 2835);                // y pixels/meter
+  writeU32(arr, 46, colorsUsed);           // colors in palette
+  writeU32(arr, 50, 0);                    // important colors
+}
+
+// ── 8-bit (256 color) indexed BMP ────────────────────────────────────────────
+function build8BitBMP(imageData, w, h) {
+  const src = imageData.data; // RGBA flat array, top-down, left-to-right
+
+  // Step 1: Build color histogram using 15-bit color keys (5 bits per channel)
+  // to get a manageable number of representative colors
+  const colorCounts = new Map();
+  const totalPixels = w * h;
+  for (let i = 0; i < totalPixels; i++) {
+    const off = i * 4;
+    const r = src[off], g = src[off+1], b = src[off+2];
+    const key = (r << 16) | (g << 8) | b;
+    colorCounts.set(key, (colorCounts.get(key) || 0) + 1);
+  }
+
+  // Step 2: Build palette from most popular colors (max 256)
+  let palette;
+  if (colorCounts.size <= 256) {
+    // Few enough unique colors — use them all directly
+    palette = Array.from(colorCounts.keys()).map(k => [(k >> 16) & 0xFF, (k >> 8) & 0xFF, k & 0xFF]);
+  } else {
+    // Too many colors — pick top 256 by frequency
+    const sorted = Array.from(colorCounts.entries()).sort((a, b) => b[1] - a[1]);
+    palette = sorted.slice(0, 256).map(([k]) => [(k >> 16) & 0xFF, (k >> 8) & 0xFF, k & 0xFF]);
+  }
+  // Pad palette to exactly 256 entries
+  while (palette.length < 256) palette.push([0, 0, 0]);
+
+  // Step 3: Build fast lookup — map exact colors first, then nearest for the rest
+  const exactLookup = new Map();
+  for (let i = 0; i < palette.length; i++) {
+    const p = palette[i];
+    exactLookup.set((p[0] << 16) | (p[1] << 8) | p[2], i);
+  }
+
+  function nearestPaletteIndex(r, g, b) {
+    const key = (r << 16) | (g << 8) | b;
+    const exact = exactLookup.get(key);
+    if (exact !== undefined) return exact;
+
+    let best = 0, bestD = Infinity;
+    for (let i = 0; i < 256; i++) {
+      const pr = palette[i][0], pg = palette[i][1], pb = palette[i][2];
+      const d = (r-pr)*(r-pr) + (g-pg)*(g-pg) + (b-pb)*(b-pb);
+      if (d < bestD) { bestD = d; best = i; if (d === 0) break; }
+    }
+    exactLookup.set(key, best); // cache for next time
+    return best;
+  }
+
+  // Step 4: Map every pixel to a palette index
+  const indices = new Uint8Array(totalPixels);
+  for (let i = 0; i < totalPixels; i++) {
+    const off = i * 4;
+    indices[i] = nearestPaletteIndex(src[off], src[off+1], src[off+2]);
+  }
+
+  // Step 5: Build BMP file
+  const rowStride = w;
+  const rowPad = (4 - (rowStride % 4)) % 4;
+  const imageSize = (rowStride + rowPad) * h;
+  const dataOffset = 14 + 40 + 256 * 4;  // file header + DIB header + palette
+  const fileSize = dataOffset + imageSize;
+
+  const bmp = new Uint8Array(fileSize);
+  writeBMPHeaders(bmp, fileSize, dataOffset, w, h, 8, 0, imageSize, 256);
+
+  // Write palette at offset 54 (BGRA order)
+  let pos = 54;
+  for (let i = 0; i < 256; i++) {
+    bmp[pos++] = palette[i][2]; // B
+    bmp[pos++] = palette[i][1]; // G
+    bmp[pos++] = palette[i][0]; // R
+    bmp[pos++] = 0;             // reserved
+  }
+
+  // Write pixel data bottom-up
+  pos = dataOffset;
+  for (let y = h - 1; y >= 0; y--) {
+    const rowStart = y * w;
+    for (let x = 0; x < w; x++) {
+      bmp[pos++] = indices[rowStart + x];
+    }
+    for (let p = 0; p < rowPad; p++) bmp[pos++] = 0;
+  }
+
+  return bmp.buffer;
+}
+
+// ── 1-bit monochrome BMP with Floyd-Steinberg dithering ──────────────────────
+function build1BitBMP(imageData, w, h) {
+  const src = imageData.data;
+
+  // Convert to grayscale float array for dithering
+  const gray = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    const off = i * 4;
+    gray[i] = src[off] * 0.299 + src[off+1] * 0.587 + src[off+2] * 0.114;
+  }
+
+  // Floyd-Steinberg dithering
+  const mono = new Uint8Array(w * h); // 0=black, 1=white
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const idx = y * w + x;
+      const oldVal = gray[idx];
+      const newVal = oldVal >= 128 ? 255 : 0;
+      mono[idx] = newVal > 0 ? 1 : 0;
+      const err = oldVal - newVal;
+      if (x + 1 < w)           gray[idx + 1]     += err * 7 / 16;
+      if (y + 1 < h && x > 0)  gray[(y+1)*w+x-1] += err * 3 / 16;
+      if (y + 1 < h)           gray[(y+1)*w+x]   += err * 5 / 16;
+      if (y + 1 < h && x+1<w)  gray[(y+1)*w+x+1] += err * 1 / 16;
+    }
+  }
+
+  // Build BMP
+  const rowBytes = Math.ceil(w / 8);
+  const rowPad = (4 - (rowBytes % 4)) % 4;
+  const imageSize = (rowBytes + rowPad) * h;
+  const paletteSize = 2 * 4;
+  const dataOffset = 14 + 40 + paletteSize;
+  const fileSize = dataOffset + imageSize;
+
+  const bmp = new Uint8Array(fileSize);
+  writeBMPHeaders(bmp, fileSize, dataOffset, w, h, 1, 0, imageSize, 2);
+
+  // Palette: index 0 = black, index 1 = white
+  let pos = 54;
+  bmp[pos++]=0;   bmp[pos++]=0;   bmp[pos++]=0;   bmp[pos++]=0;   // black
+  bmp[pos++]=255; bmp[pos++]=255; bmp[pos++]=255; bmp[pos++]=0;   // white
+
+  // Pixel data bottom-up, MSB first
+  pos = dataOffset;
+  for (let y = h - 1; y >= 0; y--) {
+    for (let byteIdx = 0; byteIdx < rowBytes; byteIdx++) {
+      let byte = 0;
+      for (let bit = 0; bit < 8; bit++) {
+        const x = byteIdx * 8 + bit;
+        if (x < w && mono[y * w + x]) {
+          byte |= (1 << (7 - bit));
+        }
+      }
+      bmp[pos++] = byte;
+    }
+    for (let p = 0; p < rowPad; p++) bmp[pos++] = 0;
+  }
+
+  return bmp.buffer;
+}
+
+// ── 16-bit RGB565 BMP ────────────────────────────────────────────────────────
+function build16BitRGB565BMP(imageData, w, h) {
+  const src = imageData.data;
+  const rowBytes = w * 2;
+  const rowPad = (4 - (rowBytes % 4)) % 4;
+  const imageSize = (rowBytes + rowPad) * h;
+  const masksSize = 12; // 3 x DWORD color masks
+  const dataOffset = 14 + 40 + masksSize;
+  const fileSize = dataOffset + imageSize;
+
+  const bmp = new Uint8Array(fileSize);
+  writeBMPHeaders(bmp, fileSize, dataOffset, w, h, 16, 3 /*BI_BITFIELDS*/, imageSize, 0);
+
+  // Color masks at offset 54: R5-G6-B5
+  writeU32(bmp, 54, 0xF800); // Red:   11111 000000 00000
+  writeU32(bmp, 58, 0x07E0); // Green: 00000 111111 00000
+  writeU32(bmp, 62, 0x001F); // Blue:  00000 000000 11111
+
+  // Pixel data bottom-up
+  let pos = dataOffset;
+  for (let y = h - 1; y >= 0; y--) {
+    for (let x = 0; x < w; x++) {
+      const off = (y * w + x) * 4;
+      const r5 = (src[off]     >> 3) & 0x1F;
+      const g6 = (src[off + 1] >> 2) & 0x3F;
+      const b5 = (src[off + 2] >> 3) & 0x1F;
+      const pixel = (r5 << 11) | (g6 << 5) | b5;
+      bmp[pos++] = pixel & 0xFF;        // low byte
+      bmp[pos++] = (pixel >> 8) & 0xFF; // high byte
+    }
+    for (let p = 0; p < rowPad; p++) bmp[pos++] = 0;
+  }
+
+  return bmp.buffer;
+}
+
+// ── Convert Handler ───────────────────────────────────────────────────────────
+function handleConvert() {
+  if (!uploadedImage || selectedModels.size === 0) return;
+
+  const status = document.getElementById('convertStatus');
+  status.textContent = 'Converting...';
+
+  generatedFiles = [];
+  const resultsGrid = document.getElementById('resultsGrid');
+  resultsGrid.innerHTML = '';
+
+  // Use setTimeout to allow UI to update
+  setTimeout(() => {
+    const selected = MODELS.filter(m => selectedModels.has(m.key));
+
+    selected.forEach(m => {
+      const { canvas, imageData } = resizeToFit(uploadedImage, m.width, m.height);
+
+      let bmpBuffer;
+      if (m.depth === 8) bmpBuffer = build8BitBMP(imageData, m.width, m.height);
+      else if (m.depth === 1) bmpBuffer = build1BitBMP(imageData, m.width, m.height);
+      else bmpBuffer = build16BitRGB565BMP(imageData, m.width, m.height);
+
+      const blob = new Blob([bmpBuffer], { type: 'image/bmp' });
+      const url = URL.createObjectURL(blob);
+      const depthLabel = m.depth === 16 ? 'RGB565' : m.depth === 1 ? 'Mono' : '256 Color';
+      const filename = `startup_${m.key}.bmp`;
+
+      generatedFiles.push({ url, filename, blob });
+
+      // Build result card
+      const card = document.createElement('div');
+      card.className = 'result-card';
+
+      const previewDiv = document.createElement('div');
+      previewDiv.className = 'result-preview';
+
+      // Draw preview on a scaled canvas
+      const prevCanvas = document.createElement('canvas');
+      const displayScale = Math.min(260 / m.width, 160 / m.height, 2);
+      prevCanvas.width = m.width * displayScale;
+      prevCanvas.height = m.height * displayScale;
+      const pCtx = prevCanvas.getContext('2d');
+      pCtx.imageSmoothingEnabled = false;
+      pCtx.drawImage(canvas, 0, 0, prevCanvas.width, prevCanvas.height);
+      previewDiv.appendChild(prevCanvas);
+
+      card.innerHTML = `
+        <div class="result-preview"></div>
+        <div class="result-model">${m.name}</div>
+        <div class="result-specs">${m.width}x${m.height} &bull; ${depthLabel} &bull; ${(blob.size/1024).toFixed(1)} KB</div>
+        <a class="btn-download" href="${url}" download="${filename}">Download BMP</a>
+      `;
+      card.querySelector('.result-preview').appendChild(prevCanvas);
+      resultsGrid.appendChild(card);
+    });
+
+    document.getElementById('resultsCard').classList.remove('hidden');
+    document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth' });
+    status.textContent = `${selected.length} image${selected.length > 1 ? 's' : ''} converted successfully!`;
+  }, 50);
+}
+
+function downloadAll() {
+  generatedFiles.forEach((f, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = f.url;
+      a.download = f.filename;
+      a.click();
+    }, i * 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildModelCards();
+</script>
+</body>
+</html>
